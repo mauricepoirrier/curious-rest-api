@@ -1,10 +1,10 @@
 from flask import Flask, request, abort, Response, jsonify 
-from views.save_image import ImageSaver
-from views.model import Model
+from app.views.save_image import ImageSaver
+from app.views.model import Model
 from os.path import join, dirname
 from os import getenv
 from dotenv import load_dotenv
-from utils import has_dependencies, create_directory
+from app.utils import has_dependencies, create_directory
 
 dotenv_path = join(dirname(__file__), '..', '.env')
 load_dotenv(dotenv_path)
