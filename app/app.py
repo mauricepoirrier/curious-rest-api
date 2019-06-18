@@ -35,7 +35,7 @@ def predict():
         token = request.values['token']
         response = image_handler.save_image(image, token)
         if response.status_code != 201:
-            abort(400)
+            return Response("Couldn't save image", status=400)
         hashed_path = image_handler.hashed_path(image, token)
         image = model.process_image(hashed_path)
         top_prob, top_class = model.predict_classes(image)

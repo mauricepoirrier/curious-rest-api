@@ -2,6 +2,8 @@ import os
 import pytest
 import sys
 from werkzeug.test import EnvironBuilder
+from mock import MagicMock 
+
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from app.app import app
@@ -33,27 +35,40 @@ def patch_image_saver(monkeypatch):
     from flask import Response
     def mock_save_image(self, image, token, label=""):
         return Response("Created", status=201)
-    monkeypatch.setattr(ImageSaver, 'save_image', mock_save_image)
+    monkeypatch.setattr(ImageSaver,'save_image', mock_save_image)
+    def mock_delete_image(self, path):
+        return None
+    monkeypatch.setattr(ImageSaver,'delete_image', mock_delete_image)
+
+@pytest.fixture()
+def patch_model(monkeypatch):
+    from app.views.model import Model
+    from flask import Response
+    def mock_process_image(self, path):
+        return path
+    monkeypatch.setattr(Model,'process_image', mock_process_image)
+    def mock_predict_classes(self, img):
+        return 1, 1
+    monkeypatch.setattr(Model,'predict_classes', mock_predict_classes)
+
 
 def test_empty_query(client):
-    response = client.post('/api/upload', data={})
+    response = client.post('/api/predict', data={})
     assert response.status_code == 400
 
 def test_query_no_image(client):
-    response = client.post('/api/upload', data={
-        "label": "abc",
+    response = client.post('/api/predict', data={
         "token": "token"
     })
     assert response.status_code == 400
 
-def test_complete_query(client, patch_image_saver):
+def test_complete_query(client, patch_image_saver, patch_model):
     with open(os.path.join(os.path.dirname(__file__), "polito.jpeg"), 'rb') as img:
         query = EnvironBuilder(
-            path='/api/upload',
+            path='/api/predict',
             method='POST',
             content_type='multipart/form-data',
             data={
-                "label": "dog",
                 "token": "token"
             }
         )
@@ -61,28 +76,13 @@ def test_complete_query(client, patch_image_saver):
         response = client.open(query)
         assert response.status_code == 201
 
-def test_query_no_label(client):
-    with open(os.path.join(os.path.dirname(__file__), "polito.jpeg"), 'rb') as img:
-        query = EnvironBuilder(
-            path='/api/upload',
-            method='POST',
-            content_type='multipart/form-data',
-            data={
-                "token": "token"
-            }
-        )
-        query.files.add_file(name='image',file=img)
-        response = client.open(query)
-        assert response.status_code == 400
-
 def test_query_no_token(client):
     with open(os.path.join(os.path.dirname(__file__), "polito.jpeg"), 'rb') as img:
         query = EnvironBuilder(
-            path='/api/upload',
+            path='/api/predict',
             method='POST',
             content_type='multipart/form-data',
             data={
-                "label": "dog"
             }
         )
         query.files.add_file(name='image',file=img)
@@ -92,11 +92,10 @@ def test_query_no_token(client):
 def test_empty_token(client):
     with open(os.path.join(os.path.dirname(__file__), "polito.jpeg"), 'rb') as img:
         query = EnvironBuilder(
-            path='/api/upload',
+            path='/api/predict',
             method='POST',
             content_type='multipart/form-data',
             data={
-                "label": "dog",
                 "token": ""
             }
         )
@@ -107,7 +106,7 @@ def test_empty_token(client):
 def test_other_extension(client):
     with open(os.path.join(os.path.dirname(__file__), "random.txt"), 'rb') as img:
         query = EnvironBuilder(
-            path='/api/upload',
+            path='/api/predict',
             method='POST',
             content_type='multipart/form-data',
             data={
