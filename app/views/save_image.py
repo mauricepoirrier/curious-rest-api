@@ -10,11 +10,11 @@ class ImageSaver():
         self.hashing = Hashing()
         self.extensions = set(['png', 'jpg', 'jpeg'])
     
-    def save_image(self, image):
+    def save_image(self, image, token):
         if not self.check_extensions(image.filename):
             abort(400)
         filename = secure_filename(image.filename)
-        hashed_name= self.hashing.hash_value(filename.split('.')[0], salt='secret') \
+        hashed_name= self.hashing.hash_value(filename.split('.')[0], salt=token) \
             +'.'+ filename.split('.')[1]
         image.save(path.join(app.config['UPLOAD_FOLDER'], hashed_name))
         return Response("Created", status=201)
