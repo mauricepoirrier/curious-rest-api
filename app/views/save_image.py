@@ -3,6 +3,10 @@ from werkzeug.utils import secure_filename
 from flask import current_app as app
 from flask import Response
 from flask_hashing import Hashing
+import sys
+
+sys.path.append("..")
+from utils import create_directory
 
 
 class ImageSaver():
@@ -10,18 +14,19 @@ class ImageSaver():
         self.hashing = Hashing()
         self.extensions = set(['png', 'jpg', 'jpeg'])
     
-    def save_image(self, image, token):
+    def save_image(self, image, token, label=""):
         '''
-        Recieves an image from form and a user token
+        Recieves an image from form, a user token and a label
         Returns a http response
         '''
         if not self.check_extensions(image.filename):
-            abort(400)
-        hashed_path = self.hashed_path(image, token)
+            return Response("Not an exentsion supported", status=400)
+        create_directory(path.join(app.config['UPLOAD_FOLDER'], label))
+        hashed_path = self.hashed_path(image, token, label)
         image.save(hashed_path)
         return Response("Created", status=201)
     
-    def hashed_path(self, image, token):
+    def hashed_path(self, image, token, label=""):
         '''
         Recieves an image object and a token
         Returns hashed path of object
@@ -29,7 +34,8 @@ class ImageSaver():
         filename = secure_filename(image.filename)
         hashed_name= self.hashing.hash_value(filename.split('.')[0], salt=token) \
             +'.'+ filename.split('.')[1]
-        return path.join(app.config['UPLOAD_FOLDER'], hashed_name)
+
+        return path.join(app.config['UPLOAD_FOLDER'], label, hashed_name)
 
     def check_extensions(self, filename):
         '''
