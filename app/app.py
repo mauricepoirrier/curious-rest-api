@@ -1,14 +1,14 @@
 from flask import Flask, request, abort
-from werkzeug.utils import secure_filename
 from views.save_image import ImageSaver
 from os.path import join, dirname
+from os import getenv
 from dotenv import load_dotenv
 
 dotenv_path = join(dirname(__file__), '..', '.env')
 load_dotenv(dotenv_path)
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = os.getenv('UPLOAD_DIRECTORY', None)
+app.config['UPLOAD_FOLDER'] = getenv('UPLOAD_DIRECTORY', None)
 
 @app.route('/api/upload', methods=['POST'])
 def upload_file():
@@ -22,6 +22,6 @@ def upload_file():
 
 if __name__ == '__main__':
     app.run(
-        debug = os.getenv('DEV_MODE', True),
-        port = os.getenv('PORT', 5000)
+        debug = getenv('DEV_MODE', True),
+        port = getenv('PORT', 5000)
         )
