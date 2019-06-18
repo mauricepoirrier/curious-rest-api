@@ -28,7 +28,7 @@ Body:
 ```
 ## Installation
 ```bash
-pip install requirements
+pip install -r requirements.txt
 ``` 
 
 ## Enviroment
@@ -42,13 +42,15 @@ WIDTH=224
 HEIGHT=224
 ```
 ## Running
+Running on root folder of the project
 ```bash
-python app
+python app/app.py
 ```
 
 ## Tests
+Running on root folder of the project
 ```bash
-python test
+pytest
 ```
 
 ## License
