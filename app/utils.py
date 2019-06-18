@@ -1,5 +1,3 @@
-from flask import abort
-
 
 def has_dependencies(request):
     '''

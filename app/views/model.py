@@ -33,10 +33,6 @@ class Model():
         img = np.array(img)
         img = img.transpose((2, 0, 1))
         img = img/255
-        #Densenet 161 Requirements
-        img[0] = (img[0] - 0.485)/0.229
-        img[1] = (img[1] - 0.456)/0.224
-        img[2] = (img[2] - 0.406)/0.225
         img = img[np.newaxis,:]
         image = torch.from_numpy(img)
         image = image.float()
