@@ -5,7 +5,6 @@ from flask import Response
 from flask_hashing import Hashing
 
 
-
 class ImageSaver():
     def __init__(self):
         self.hashing = Hashing()
