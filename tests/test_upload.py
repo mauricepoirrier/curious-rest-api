@@ -3,9 +3,9 @@ import pytest
 import sys
 from werkzeug.test import EnvironBuilder
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from app.app import app
-from app.utils import create_directory
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..","app")))
+from app import app
+from utils import create_directory
 
 
 @pytest.fixture
@@ -29,7 +29,7 @@ def delete_file():
 
 @pytest.fixture()
 def patch_image_saver(monkeypatch):
-    from app.views.save_image import ImageSaver
+    from views.save_image import ImageSaver
     from flask import Response
     def mock_save_image(self, image, token, label=""):
         return Response("Created", status=201)
