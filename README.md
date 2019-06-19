@@ -27,9 +27,13 @@ Body:
 
 ```
 ## Installation
+Project uses PyTorch and other packages, to install run the followings commands
 ```bash
 pip install -r requirements.txt
+pip install https://download.pytorch.org/whl/cu100/torch-1.1.0-cp37-cp37m-linux_x86_64.whl
+pip install https://download.pytorch.org/whl/cu100/torchvision-0.3.0-cp37-cp37m-linux_x86_64.whl
 ``` 
+Note that could be other versions as pip is currently not working for PyTorch.
 
 ## Enviroment
 Project does use an .env with the following variables
@@ -42,15 +46,35 @@ WIDTH=224
 HEIGHT=224
 ```
 ## Running
-Running on root folder of the project
+Running on root folder of the project and set the FLASK APP as following
+Windows
+```
+set FLASK_APP=app/app.py
+```
+Unix
 ```bash
-python app/app.py
+export FLASK_APP=app/app.py
+```
+then run
+```
+flask run
 ```
 
 ## Tests
 Running on root folder of the project
 ```bash
 pytest
+```
+
+## Docker
+Project has a dockefile running a not standart PyTorch image.
+To build the image
+```bash
+docker build -t curious_api .
+```
+To run the container
+```bash
+docker run -p 5000:5000 curious_api
 ```
 
 ## License
