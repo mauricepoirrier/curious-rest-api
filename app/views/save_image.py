@@ -6,7 +6,7 @@ from flask_hashing import Hashing
 import sys
 
 sys.path.append("..")
-from app.utils import create_directory
+from utils import create_directory
 
 
 class ImageSaver():
